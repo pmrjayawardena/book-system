@@ -90,6 +90,7 @@ $obb=new book();
      
 
       <h2>  <a href="./add_book.php" class="btn btn-primary">Add Book</a></h2>
+      <div class="table-responsive">
       <table class="table">
   <thead>
   <tr>
@@ -157,6 +158,7 @@ $obb=new book();
 
   </tbody>
 </table>
+</div>
     </main>
   </div>
 </div>

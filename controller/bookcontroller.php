@@ -19,8 +19,12 @@ switch ($action)
          }
 
         $description=clean($arr['description']);
+        $book_title=clean($arr['book_title']);
+        $isbn=clean($arr['isbn']);
+        $author_name=clean($arr['author_name']);
         $user_id = $userinfo['user_id'];
-        $book_id = $obb->addBook($arr, $description,$user_id); //add Book details to db and get the last inserted id
+        
+        $book_id = $obb->addBook($isbn,$book_title,$author_name, $description,$user_id); //add Book details to db and get the last inserted id
         if ($book_id)
         { //If book has been added then
             if ($_FILES['book_image']['name'] != "")

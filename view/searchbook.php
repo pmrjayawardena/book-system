@@ -8,15 +8,12 @@ include '../model/bookmodel.php';
 include '../common/functions.php';
 
 
-
 $search=$_REQUEST['search'];
 
 setcookie('lastSearchedTerm',$search, time() + (86400 * 30), "/"); // 86400 = 1 day
 $obb=new book();
  //search book with a keyword($search) 5 per page
-$results=$obb->viewSearchBook($search,'ASC');
-
-
+$results=$obb->viewSearchBookTerm($search);
 $nor=$results->rowCount();
 $nop =  ceil($nor/5);
 
@@ -28,7 +25,37 @@ if(!isset($_GET['page']) || $_GET['page']==1){
  $start=$page*5-5;
 }
 $limit=5;
- $result=$obb->viewSearchBookLimited($search,$start, $limit) // limit users by a parameter $search
+ $result=$obb->viewSearchBookLimited($search,$start, $limit); // limit users by a parameter $search
+
+
+
+ if (isset($_POST['filter'])) {
+  $filter = true;
+  $filter_value = $_POST['filter'];
+
+  if($filter_value == "l2h"){
+    $filtersql = "ASC";
+}else{
+    $filtersql = "DESC";
+}
+$results=$obb->viewSearchBook($search,$filtersql);
+$nor=$results->rowCount();
+$nop =  ceil($nor/5);
+
+if(!isset($_GET['page']) || $_GET['page']==1){
+ $start=0;
+ $page=1;
+}else{
+ $page=$_GET['page'];
+ $start=$page*5-5;
+}
+$limit=5;
+ $result=$obb->viewSearchBookLimited($search,$start, $limit); // limit users by a parameter $search
+
+} else {
+  $filter = false;
+}
+
  ?>
 
 
@@ -121,24 +148,42 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
       </div>
       <div class="col-lg-6"></div>
           <div class="col-lg-6">
+          <form action="searchbook.php" method="post" class="form-inline my-2 my-lg-0">
+            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="filter" id="inlineRadio1" value="l2h" onchange="this.form.submit()" <?php if ($filter && $filter_value=='l2h') {
+                                                                                                                                                            echo 'checked';
+                                                                                                                                                        } ?>>
+                            <label class="form-check-label" for="inlineRadio1">Lowest to Highest</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="filter" id="inlineRadio2" value="h2l" onchange="this.form.submit()" <?php if ($filter && $filter_value=='h2l') {
+                                                                                                                                                            echo 'checked';
+                                                                                                                                                        } ?>> 
+                            <label class="form-check-label" for="inlineRadio2">Highest to Lowest</label>
+                        </div></form>
             <form action="searchbook.php" method="post" class="form-inline my-2 my-lg-0" >
+           
               <i class="fas fa-search"></i>&nbsp;
               <input class="form-control mr-sm-2 mb-3" type="text" name="search" id="search" placeholder="Enter a Keyword" aria-label="Search" size="61">
               <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
             </form>
+
+
           </p>
         </div><!-- /.col-lg-6 -->
      
       <div class="container mt-4">
     <div class="row">
     <?php if($nor!=0){?>
-                <table class="table table-hover ">
+      <div class="table-responsive">
+                <table class="table">
                   <thead>
                     <tr>
                     <th>Book Image</th>
                       <th>ISBN</th>
                       <th>Author Name</th>
                       <th>Book Description</th>
+                      <th>Rating</th>
                       <th>Action</th>
                       <th></th>
                     </tr>
@@ -146,48 +191,57 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
                   <tbody>
                     <?php while($row=$results->fetch(PDO::FETCH_BOTH)) { 
 
-                  $getRatedOverall = $obb->getTotalSumRating($row['user_nic']);
-                  $ratingCount = $obb->getRatingCount($row['user_nic']);
-                    $rowratedOverall =$getRatedOverall->fetch(PDO::FETCH_BOTH);
+                      $overall=$obb->overallRating( $row ['id']);
+                      $sumRating=$obb->ratingSUM( $row ['id']);
+                      $data1= $sumRating->fetch(PDO::FETCH_BOTH);
+                      $data= $overall->rowCount();
+                      $rate =$data1['BookRate'];
+                      $overallFinal =  $rate / $data;
 
-                    if($row['book_image']==""){
+                      if($row['book_image']==""){
                       $uimage="../images/book_default.png";
-                    }else{
+                      }else{
                       $uimage="../images/book_images/".$row['book_image'];
-                    }
-                    $overallFinal=0;
-                    if($data <=0){
-                       $overallFinal=0;
-                    }else{
-                       $rate =$data1['BookRate'];
-                       $overallFinal =  $rate / $data;
-                    }
+                      }
+
+                      $overallFinal=0;
+                      if($data <=0){
+                        $overallFinal=0;
+                      }else{
+                        $rate =$data1['BookRate'];
+                        $overallFinal =  $rate / $data;
+                      }
                       ?>
                       <tr>
                         <td><img src="<?php echo $uimage; ?>" class="style1" width="50px" height="50px" /></td>
                         <td><?php echo $row['isbn'];?></td>
                         <td><?php echo $row['author_name']." ".$row['user_lname']; ?></td>
                         <td><?php echo $row['book_des']; ?> </td>
+                        <td><?php echo $overallFinal; ?> </td>
                         <td>
                           <a href="../view/viewbook.php?book_id=<?php echo $row ['id']; ?>">
                               <button type="button" class="btn btn-primary mt-3">View</button>
                             </a>
+                            <?php if($userinfo['role_id'] ==1){ ?>
                           <a href="../view/editbook.php?book_id=<?php echo $row ['id']; ?>">
                               <button type="button" class="btn btn-primary mt-3">Edit</button>
                             </a>
+                            <?php }?>
                           <a href="../view/ratebook.php?book_id=<?php echo $row ['id']; ?>">
                               <button type="button" class="btn btn-success mt-3">Rate</button>
                             </a>
+                            <?php if($userinfo['role_id'] ==1){ ?>
                           <a href="../controller/bookcontroller.php?action=delete&book_id=<?php echo $row['id']; ?>">
                               <button type="button" class="btn btn-danger mt-3">Delete</button>
                             </a>
-
+                            <?php }?>
                        </td>
                         <td></td>
                       </tr>
                     <?php } ?>
                   </tbody>
                 </table>
+                </div>
               <?php }else{
 
                 ?>

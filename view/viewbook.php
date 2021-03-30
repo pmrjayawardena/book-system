@@ -160,7 +160,7 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
 <div class="form-group row mt-3">
 <label class="control-label text-right col-md-3">Book Image&nbsp; <i class="fas fa-grimace"></i></label>
 <div class="col-md-9">
-<input type="file" name="book_image" id="book_image" placeholder="Book Image" class="form-control" onchange="readURL(this)" />
+<input readonly disabled type="file" name="book_image" id="book_image" placeholder="Book Image" class="form-control" onchange="readURL(this)" />
     <div id="uierror" class="error"></div><img id="image_view" />
 </div>
 </div>

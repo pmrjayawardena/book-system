@@ -107,6 +107,7 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
      
 
       <h2>  <a href="./add_book.php" class="btn btn-primary">Add Book</a></h2>
+      <div class="table-responsive">
       <table class="table">
   <thead>
   <tr>
@@ -174,6 +175,7 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
 
   </tbody>
 </table>
+</div>
     </main>
   </div>
 </div>

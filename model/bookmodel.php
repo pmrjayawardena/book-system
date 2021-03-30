@@ -138,16 +138,16 @@ class book
     }
     
     
-    public function addBook($arr, $description, $book_id)
+    public function addBook($isbn,$book_title,$author_name, $description,$user_id)
     {
         global $con;
         $r = $con->prepare("INSERT INTO book (isbn,book_title,author_name,book_des,user_id) VALUES (?,?,?,?,?)");
         $r->execute(array(
-            $arr['isbn'],
-            $arr['book_title'],
-            $arr['author_name'],
+            $isbn,
+            $book_title,
+            $author_name,
             $description,
-            $book_id
+            $user_id
         ));
         $book_id = $con->lastinsertId();
         return $book_id;
@@ -210,7 +210,16 @@ class book
     }
     
     
-    public function viewSearchBook($search) //view all user data
+    public function viewSearchBook($search,$filtersql) //view all user data
+    {
+        global $con;
+        // $r = $con->prepare("SELECT * FROM book WHERE book_title LIKE '$search%' OR author_name LIKE '$search%' OR isbn LIKE '$search'");
+        $r = $con->prepare("SELECT book.id,book.isbn,book.book_title,book.author_name,book.book_des,book.book_image, (select nvl(SUM(rating),0) from book_rating where book_id=book.id) as rates from book   GROUP BY book.id ORDER BY rates ".$filtersql." ");
+        $r->execute(array());
+        
+        return $r;
+    }
+    public function viewSearchBookTerm($search) //view all user data
     {
         global $con;
         $r = $con->prepare("SELECT * FROM book WHERE book_title LIKE '$search%' OR author_name LIKE '$search%' OR isbn LIKE '$search'");

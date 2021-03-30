@@ -20,7 +20,7 @@ if($_SESSION){
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.82.0">
-    <title>Signin Template · Bootstrap v5.0</title>
+    <title>Sign In</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
 
@@ -123,7 +123,7 @@ if($_SESSION){
         <?php } ?>   
     <div class="form-floating">
       <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"  name="user_nic">
-      <label for="floatingInput">Email address</label>
+      <label for="floatingInput">Usernames</label>
     </div>
     <div class="form-floating">
       <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="txtPassword"  >
@@ -132,10 +132,10 @@ if($_SESSION){
 
 
     <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-   
+    <a href="./student_register.php" class="w-100 btn btn-lg btn-success mt-3" >Register</a>
     <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
   </form>
-  <a href="./student_register.php" class="w-100 btn btn-lg btn-success mt-3" >Register</a>
+  
 </main>
 <script>
 // --- Config --- //

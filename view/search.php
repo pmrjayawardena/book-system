@@ -33,7 +33,7 @@ $obb=new book();
  $limit=5;
  $result=$obb->viewBookLimited($start, $limit);
 
-
+ $results=$obb->viewSearchBookTerm($search,'ASC');
  ?>
 
 
@@ -128,19 +128,18 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
 
 
   <form action="searchbook.php" method="post" class="form-inline my-2 my-lg-0" >
-
-  <div class="form-check">
-  <input class="form-check-input" type="radio" name="highest" id="flexRadioDefault1" checked>
-  <label class="form-check-label" for="flexRadioDefault1">
-    Highest Rating
-  </label>
-</div>
-<div class="form-check">
-  <input class="form-check-input" type="radio" name="lowest" id="flexRadioDefault2" >
-  <label class="form-check-label" for="flexRadioDefault2">
-   Lowest Rating
-  </label>
-</div>
+  <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="filter" id="inlineRadio1" value="l2h" onchange="this.form.submit()" <?php if ($filter && $filter_value=='l2h') {
+                                                                                                                                                            echo 'checked';
+                                                                                                                                                        } ?>>
+                            <label class="form-check-label" for="inlineRadio1">Lowest to Highest</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="filter" id="inlineRadio2" value="h2l" onchange="this.form.submit()" <?php if ($filter && $filter_value=='h2l') {
+                                                                                                                                                            echo 'checked';
+                                                                                                                                                        } ?>> 
+                            <label class="form-check-label" for="inlineRadio2">Highest to Lowest</label>
+                        </div>
     <input class="form-control mr-sm-2 mb-3" type="text" name="search" id="search" placeholder="Enter a Keyword" aria-label="Search" size="51">
     
     
@@ -153,7 +152,8 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
 
       <div class="container mt-4">
     <div class="row">
-    <table class="table table-hover ">
+    <div class="table-responsive">
+    <table class="table ">
             <thead>
               <tr>
                 <th>Book Image</th>
@@ -169,25 +169,26 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
             </thead>
             <tbody>
               <?php while($row=$result->fetch(PDO::FETCH_BOTH)) { 
-                   if($row['book_image']==""){
-                    $uimage="../images/book_default.png";
-                  }else{
-                    $uimage="../images/book_images/".$row['book_image'];
-                  }
                 $overall=$obb->overallRating( $row ['id']);
-                   $sumRating=$obb->ratingSUM( $row ['id']);
-                   $data1= $sumRating->fetch(PDO::FETCH_BOTH);
-                   $data= $overall->rowCount();
-                    $rate =$data1['BookRate'];
-                   $overallFinal =  $rate / $data;
-                   $overallFinal=0;
-                   if($data <=0){
-                      $overallFinal=0;
-                   }else{
-                      $rate =$data1['BookRate'];
-                      $overallFinal =  $rate / $data;
-                   }
+                $sumRating=$obb->ratingSUM( $row ['id']);
+                $data1= $sumRating->fetch(PDO::FETCH_BOTH);
+                $data= $overall->rowCount();
+                  $rate =$data1['BookRate'];
+                $overallFinal =  $rate / $data;
 
+                if($row['book_image']==""){
+                  $uimage="../images/book_default.png";
+                }else{
+                  $uimage="../images/book_images/".$row['book_image'];
+                }
+
+                $overallFinal=0;
+                if($data <=0){
+                  $overallFinal=0;
+                }else{
+                  $rate =$data1['BookRate'];
+                  $overallFinal =  $rate / $data;
+                }
                 ?>
                 <tr>
                   <td><img src="<?php echo $uimage; ?>" class="style1" width="50px" height="50px" /></td>
@@ -220,6 +221,7 @@ echo "<script type='text/javascript'> swal('Deleted!', 'Book Deleted Successfull
               <?php } ?>
             </tbody>
           </table>
+          </div>
           <nav class="container">
               <ul class="pagination">
 
