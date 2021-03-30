@@ -8,7 +8,7 @@ if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
 	}
 	$uri .= $_SERVER['HTTP_HOST'];
         echo $uri;
-	header('Location: '.$uri.'/bookupdated/view/login.php');
+	header('Location: '.$uri.'/book-system/view/login.php');
 	exit;
 ?>
 <!--Something is wrong with the XAMPP installation :-(-->
